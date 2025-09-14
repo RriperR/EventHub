@@ -1,0 +1,11 @@
+services:
+  event-hub:
+    build:
+      context: ..
+      dockerfile: ./app/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: local
+      LOG_LEVEL: INFO
+      PROMETHEUS_ENABLED: "true"

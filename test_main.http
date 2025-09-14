@@ -1,0 +1,8 @@
+### health
+GET http://localhost:8000/healthz
+
+### ready
+GET http://localhost:8000/readyz
+
+### metrics
+GET http://localhost:8000/metrics
