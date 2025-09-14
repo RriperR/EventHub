@@ -1,12 +1,16 @@
+import logging
+
 from fastapi import FastAPI, Request
 from fastapi.responses import ORJSONResponse
-import logging
+from strawberry.fastapi import GraphQLRouter
 
 from app.core.config import settings
 from app.core.logger import setup_logging
 from app.core.request_id import RequestIdMiddleware, RequestIdFilter
 from app.core.metrics import MetricsMiddleware, prometheus_asgi_app
 from app.api import api_router
+from app.graphql.schema import schema
+
 
 def create_app() -> FastAPI:
     setup_logging(settings.log_level)
@@ -23,7 +27,9 @@ def create_app() -> FastAPI:
     app.add_middleware(MetricsMiddleware)
 
     # routers
+    gql_router = GraphQLRouter(schema)
     app.include_router(api_router)
+    app.include_router(gql_router, prefix="/graphql")
 
     # /metrics — отдельным ASGI приложением (без FastAPI роутера, чтобы не мешать метрике путей)
     if settings.prometheus_enabled:
