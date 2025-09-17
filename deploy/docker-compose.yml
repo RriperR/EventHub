@@ -9,3 +9,17 @@ services:
       APP_ENV: local
       LOG_LEVEL: INFO
       PROMETHEUS_ENABLED: "true"
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.8
+    ports: [ "8123:8123","9000:9000" ]
+    environment:
+      CLICKHOUSE_DB: eventhub
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    volumes:
+      - ch-data:/var/lib/clickhouse
+      - ch-logs:/var/log/clickhouse-server
+
+volumes:
+  ch-data:
+  ch-logs:

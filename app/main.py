@@ -1,5 +1,6 @@
 import logging
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import ORJSONResponse
 from strawberry.fastapi import GraphQLRouter
@@ -10,6 +11,16 @@ from app.core.request_id import RequestIdMiddleware, RequestIdFilter
 from app.core.metrics import MetricsMiddleware, prometheus_asgi_app
 from app.api import api_router
 from app.graphql.schema import schema
+from app.storage.clickhouse.client import init_db, close_client
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+    close_client()
+    logging.getLogger("app").info("Application shutdown")
+
 
 
 def create_app() -> FastAPI:
@@ -20,6 +31,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.app_name,
         default_response_class=ORJSONResponse,
+        lifespan=lifespan,
     )
 
     # middlewares
