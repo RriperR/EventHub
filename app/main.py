@@ -1,6 +1,7 @@
 import logging
+import asyncio
 
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from fastapi import FastAPI, Request
 from fastapi.responses import ORJSONResponse
 from strawberry.fastapi import GraphQLRouter
@@ -12,14 +13,23 @@ from app.core.metrics import MetricsMiddleware, prometheus_asgi_app
 from app.api import api_router
 from app.graphql.schema import schema
 from app.storage.clickhouse.client import init_db, close_client
+from app.grpc.server import serve_grpc
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    yield
-    close_client()
-    logging.getLogger("app").info("Application shutdown")
+    # запускаем gRPC-сервер параллельно
+    task = asyncio.create_task(serve_grpc(bind="[::]:50051"))
+    try:
+        yield
+    finally:
+        # аккуратно останавливаем
+        task.cancel()
+        with suppress(asyncio.CancelledError):
+            await task
+        close_client()
+        logging.getLogger("app").info("Application shutdown")
 
 
 

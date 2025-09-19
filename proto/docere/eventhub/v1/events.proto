@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package docere.eventhub.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+message Event {
+  string id = 1;
+  string tenant_id = 2;
+  string type = 3;
+  string actor_id = 4;
+  string patient_id = 5;
+  google.protobuf.Timestamp ts = 6;
+  // произвольные поля события
+  google.protobuf.Struct props = 7;
+}
+
+message PublishEventRequest { Event event = 1; }
+message PublishEventResponse { bool ok = 1; string message = 2; }
+
+message PublishEventsResponse {
+  uint32 accepted = 1;
+  uint32 failed = 2;
+}
+
+service EventIngest {
+  rpc PublishEvent(PublishEventRequest) returns (PublishEventResponse);
+  rpc PublishEvents(stream Event) returns (PublishEventsResponse);
+}
