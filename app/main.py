@@ -11,7 +11,7 @@ from app.core.logger import setup_logging
 from app.core.request_id import RequestIdMiddleware, RequestIdFilter
 from app.core.metrics import MetricsMiddleware, prometheus_asgi_app
 from app.api import api_router
-from app.graphql.schema import schema
+from app.graphql_api.schema import schema
 from app.storage.clickhouse.client import init_db, close_client
 from app.grpc.server import serve_grpc
 

@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS events_enriched
 )
 ENGINE = MergeTree
 PARTITION BY toYYYYMM(ts)
-ORDER BY (tenant_id, event_type, ts, actor_id, id);
+ORDER BY (tenant_id, event_type, ts, id)
 """.strip()
 
 
@@ -112,7 +112,6 @@ def select_events(
     tenant_id: str | None = None,
     patient_id: str | None = None,
     limit: int = 50,
-    deduplicate: bool = True,  # по умолчанию «склеиваем» дубли по id
 ) -> list[dict[str, Any]]:
     """
     Читаем последние события. Если deduplicate=True — используем FINAL,
@@ -130,7 +129,7 @@ def select_events(
         parameters["pid"] = patient_id
 
     where_sql = f" WHERE {' AND '.join(where)}" if where else ""
-    final_hint = " FINAL" if deduplicate else ""
+    final_hint = ""
 
     sql = f"""
         SELECT id, ts, event_type, tenant_id, actor_id, patient_id, props

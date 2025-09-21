@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     prometheus_enabled: bool = True
 
     # clickhouse
-    ch_host: str = "localhost"    # ⬅️ вместо URL
+    ch_host: str = "clickhouse"    # ⬅️ вместо URL
     ch_port: int = 8123
     ch_secure: bool = False       # True для https
     ch_database: str = "eventhub"

@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from google.protobuf.struct_pb2 import Struct
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from docere.eventhub.v1 import events_pb2_grpc, events_pb2
+from docere.eventhub.v1 import events_pb2, events_pb2_grpc
 
 
 async def main():

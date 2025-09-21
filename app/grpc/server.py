@@ -7,7 +7,7 @@ from google.protobuf.struct_pb2 import Struct
 from google.protobuf.timestamp_pb2 import Timestamp
 
 from app.storage.clickhouse.client import insert_event
-from docere.eventhub.v1 import events_pb2_grpc, events_pb2
+from app.docere.eventhub.v1 import events_pb2_grpc, events_pb2
 
 
 def _pb_ts_to_dt(ts: Timestamp) -> datetime:

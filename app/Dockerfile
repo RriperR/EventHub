@@ -1,19 +1,16 @@
-# ===== build stage (uv) =====
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm AS build
-WORKDIR /app
-COPY pyproject.toml uv.lock README.md ./
-RUN uv sync --frozen --no-install-project
-# скопируем приложение
-COPY app ./app
-COPY main.py ./main.py
-# соберём в венв (wheelhouse внутри uv-кэша, но для простоты — layer с проектом)
-RUN uv pip install -e . --system
+# ==== simple single-stage (uv) ====
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm
 
-# ===== run stage =====
-FROM python:3.12-slim
+WORKDIR /code
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
-WORKDIR /app
-COPY --from=build /usr/local /usr/local
+# чтобы бинарники из .venv были в PATH (на всякий случай)
+
+# 1) ставим зависимости
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev
+
+# 2) копируем код
 COPY app ./app
-COPY main.py ./main.py
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# 3) старт
+CMD ["uv", "run", "uvicorn", "app.main:app", "--host=0.0.0.0", "--port=8000"]
