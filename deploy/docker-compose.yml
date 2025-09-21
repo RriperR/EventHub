@@ -1,10 +1,14 @@
 services:
   event-hub:
+    container_name: event-hub
     build:
       context: ..
       dockerfile: ./app/Dockerfile
+    expose:
+      - "50051"
     ports:
-      - "8000:8000"
+      - "8000:8000"         # если у тебя есть HTTP UI
+      - "50051:50051"       # Необязательно, но удобно тестить с хоста
     environment:
       APP_ENV: local
       LOG_LEVEL: INFO
@@ -23,3 +27,8 @@ services:
 volumes:
   ch-data:
   ch-logs:
+
+networks:
+  default:
+    name: docere_net
+    external: true

@@ -3,7 +3,7 @@ import datetime as dt
 import strawberry
 from strawberry.scalars import JSON
 
-from app.storage.clickhouse.client import insert_event, select_events
+from storage.clickhouse.client import insert_event, select_events
 
 
 @strawberry.type
